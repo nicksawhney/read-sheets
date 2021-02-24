@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 '''
 Nick Sawhney
 a midi processing library, for eventual use with tensorflow
@@ -6,6 +8,7 @@ a midi processing library, for eventual use with tensorflow
 import mido
 import argparse
 import sys
+import json
 
 from contextlib import redirect_stdout
 
@@ -19,15 +22,15 @@ def print_message(message, meta):
 		if type(m_attr) is str:
 			m_attr = f'"m_attr"'
 
-		print(f'\t"{attr}": {mvars[attr]},')
+		print(f'\t"{attr}": "{mvars[attr]}",')
 
 	if meta:
-		print(f'\t"is_meta": {message.is_meta},')
+		print(f'\t"is_meta": "{message.is_meta}",')
 
 	print('},')
 		
 
-def read(midi_in, meta=False, max_events=None, save_file=False, **kwargs):
+def read(midi_in, meta=False, max_events=None, save_file=None, **kwargs):
 	'''
 	prints midi file information, optionally saving 
 	only testing on single track midi for now
@@ -45,17 +48,43 @@ def read(midi_in, meta=False, max_events=None, save_file=False, **kwargs):
 	else:
 		mid_f = midi_in
 
-	
-	for track in mid_f.tracks:
-		c = 0
-		for message in track:
-			print_message(message, meta)	
+	midi_obj = {}
 
-			# for debug purposes
-			c += 1
+	track = mid_f.tracks[0]
 
-			if max_events and c > max_events:
-				break
+	for idx, message in enumerate(track):
+		if idx >= max_events:
+			break
+
+		midi_obj[idx] = {}
+
+		mvars = vars(message)
+		for attr in vars(message):
+			midi_obj[idx][attr] = mvars[attr]
+
+
+		if meta:
+			midi_obj[idx]['is_meta'] = message.is_meta
+
+		
+
+	if save_file:
+		with open(save_file, 'w+') as f:
+			json.dump(midi_obj, f)
+
+	else:
+		print(json.dumps(midi_obj, indent=4))
+
+
+
+	# print('"midi:"', end=' ')	
+	# for track in mid_f.tracks:
+	# 	c = 0
+	# 	for message in track:
+	# 		print_message(message, meta)	
+
+	# 		if max_events and c > max_events:
+	# 			break
 
 	return mid_f
 
