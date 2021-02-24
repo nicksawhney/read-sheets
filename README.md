@@ -1,7 +1,7 @@
 # read-sheets: a sheet music reading library
 Very early stages, but I'm playing around with sheet music reading using the [deepscores dataset](https://tuggeluk.github.io/deepscores/)
 
-`mido.py` will eventually have some simple midi interfacing functions, and might also handle simpler file writing.
+`midi.py` will eventually have some simple midi interfacing functions, and might also handle simpler file writing.
 
 
 
