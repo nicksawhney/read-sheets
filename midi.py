@@ -11,13 +11,23 @@ from contextlib import redirect_stdout
 
 
 def print_message(message, meta):
-	if meta:
-		print(f'{str(vars(message))[:-1]}, is_meta: {message.is_meta}', end='')
-		print('},')
-	else:
-		print(f'{vars(message)},')
+	print('{')
+	mvars = vars(message)
+	for attr in vars(message):
+		m_attr = mvars[attr]
 
-def read(midi_in, meta=False, save_file=False, **kwargs):
+		if type(m_attr) is str:
+			m_attr = f'"m_attr"'
+
+		print(f'\t"{attr}": {mvars[attr]},')
+
+	if meta:
+		print(f'\t"is_meta": {message.is_meta},')
+
+	print('},')
+		
+
+def read(midi_in, meta=False, max_events=None, save_file=False, **kwargs):
 	'''
 	prints midi file information, optionally saving 
 	only testing on single track midi for now
@@ -35,9 +45,6 @@ def read(midi_in, meta=False, save_file=False, **kwargs):
 	else:
 		mid_f = midi_in
 
-	print('{')
-	print(f'tracks: {len(mid_f.tracks)},')
-
 	c = 0
 	for track in mid_f.tracks:
 		for message in track:
@@ -45,9 +52,10 @@ def read(midi_in, meta=False, save_file=False, **kwargs):
 
 			# for debug purposes
 			c += 1
-			if c > 10:
+
+			if max_events and c > max_events:
 				break
-	print('}')
+
 	return mid_f
 
 
@@ -56,13 +64,14 @@ if __name__ == '__main__':
 	parser.add_argument('-f', '--fname', default='os-bass.mid', help='existing midi file name')
 	parser.add_argument('-s', '--sname', default=None, help='json file save location (if omitted, will print to stdout')
 	parser.add_argument('-m', '--meta', default=False, help='inclusion of meta midi elements')
+	parser.add_argument('--max_events', default=None, help='maximum midi events to transcribe')
 
 	args = parser.parse_args()
 
 	if args.sname:
 		with open(args.sname, 'w+') as f:
 			with redirect_stdout(f):
-				mid = read(args.fname, meta=args.meta)
+				mid = read(args.fname, meta=args.meta, max_events=args.max_events)
 
 	else:
 		mid = read(args.fname, meta=args.meta)
