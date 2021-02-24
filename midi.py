@@ -54,8 +54,8 @@ def read(midi_in, meta=False, save_file=False, **kwargs):
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-f', '--fname', default='os-bass.mid', help='existing midi file name')
-	parser.add_argument('-s', '--sname', default=None)
-	parser.add_argument('-m', '--meta', default=False)
+	parser.add_argument('-s', '--sname', default=None, help='json file save location (if omitted, will print to stdout')
+	parser.add_argument('-m', '--meta', default=False, help='inclusion of meta midi elements')
 
 	args = parser.parse_args()
 
