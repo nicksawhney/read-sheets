@@ -5,43 +5,65 @@ a midi processing library, for eventual use with tensorflow
 
 import mido
 import argparse
+import sys
 
-def save(messages, out_name: str):
-	mid = mido.MidiFile(type=1)
-	track = mido.MidiTrack()
+from contextlib import redirect_stdout
 
-	for message in messages:
-		track.append(message)
 
-	mid.save(out_name)
+def print_message(message, meta):
+	if meta:
+		print(f'{str(vars(message))[:-1]}, is_meta: {message.is_meta}', end='')
+		print('},')
+	else:
+		print(f'{vars(message)},')
 
-def read(in_name, save=False, **kwargs):
+def read(midi_in, meta=False, save_file=False, **kwargs):
 	'''
-	in_name: the name of a config file
+	prints midi file information, optionally saving 
+	only testing on single track midi for now
+
+	midi_in: the name of a midi file or a bytes file object
+			 representing midi
+	save: filename to save to (optional)
+	kwargs: mido.MidiFile keyword args
 
 	returns mido midi file object
 	'''
+	if type(midi_in) is str:
+		mid_f = mido.MidiFile(filename=midi_in, **kwargs)
 
-	mid_f = mido.MidiFile(in_name, **kwargs)
+	else:
+		mid_f = midi_in
 
-	print('midi attributes:')
+	print('{')
+	print(f'tracks: {len(mid_f.tracks)},')
 
-	# for debug purposes
-	for attribute in dir(mid_f):
-		if not attribute.startswith('_'):
-			print(attribute)
+	c = 0
+	for track in mid_f.tracks:
+		for message in track:
+			print_message(message, meta)	
 
+			# for debug purposes
+			c += 1
+			if c > 10:
+				break
+	print('}')
 	return mid_f
+
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-f', '--fname', help='existing midi file name')
+	parser.add_argument('-f', '--fname', default='os-bass.mid', help='existing midi file name')
+	parser.add_argument('-s', '--sname', default=None)
+	parser.add_argument('-m', '--meta', default=False)
 
 	args = parser.parse_args()
 
-	mid = read(args.fname)
+	if args.sname:
+		with open(args.sname, 'w+') as f:
+			with redirect_stdout(f):
+				mid = read(args.fname, meta=args.meta)
 
-
-
-
+	else:
+		mid = read(args.fname, meta=args.meta)
 
