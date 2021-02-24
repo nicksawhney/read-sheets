@@ -27,3 +27,8 @@ optional arguments:
 
 ## Testing
 testing is done with `pytest`. Make sure to install `pip install -e .` and install requirements. 
+
+## TODOs:
+
+- write note->midi conversion
+- write data pipelining (specific scaling of images?)
