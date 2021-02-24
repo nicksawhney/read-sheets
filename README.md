@@ -27,4 +27,5 @@ optional arguments:
                         maximum midi events to transcribe
 ```
 
-currently building testing for use with `pytest`
+## Testing
+testing is done with `pytest`. Make sure to install `pip install -e .` and install requirements. 
