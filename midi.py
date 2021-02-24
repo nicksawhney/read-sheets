@@ -45,8 +45,9 @@ def read(midi_in, meta=False, max_events=None, save_file=False, **kwargs):
 	else:
 		mid_f = midi_in
 
-	c = 0
+	
 	for track in mid_f.tracks:
+		c = 0
 		for message in track:
 			print_message(message, meta)	
 
@@ -64,7 +65,7 @@ if __name__ == '__main__':
 	parser.add_argument('-f', '--fname', default='os-bass.mid', help='existing midi file name')
 	parser.add_argument('-s', '--sname', default=None, help='json file save location (if omitted, will print to stdout')
 	parser.add_argument('-m', '--meta', default=False, help='inclusion of meta midi elements')
-	parser.add_argument('--max_events', default=None, help='maximum midi events to transcribe')
+	parser.add_argument('--max_events', default=None, type=int, help='maximum midi events to transcribe')
 
 	args = parser.parse_args()
 
@@ -74,5 +75,5 @@ if __name__ == '__main__':
 				mid = read(args.fname, meta=args.meta, max_events=args.max_events)
 
 	else:
-		mid = read(args.fname, meta=args.meta)
+		mid = read(args.fname, meta=args.meta, max_events=args.max_events)
 
