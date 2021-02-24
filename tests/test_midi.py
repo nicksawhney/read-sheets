@@ -21,7 +21,7 @@ def test_midi_json():
 
 
 def test_meta_included():
-	test_out_path = 'tests/test_output.json'
+	test_out_path = 'tests/test_output_meta.json'
 	midi_obj = midi.read('os-bass.mid', 
 					meta=True, 
 					max_events=10,
